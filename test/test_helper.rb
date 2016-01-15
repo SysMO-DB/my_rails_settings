@@ -1,15 +1,9 @@
-gem 'activesupport', '< 3'
-gem 'activerecord', '< 3'
-
-require 'rubygems'
-require 'active_support'
-require 'active_support/test_case'
 require 'active_record'
 require 'test/unit'
 
-require "#{File.dirname(__FILE__)}/../init"
-
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => ":memory:")
+
+require "#{File.dirname(__FILE__)}/../rails/init"
 
 class User < ActiveRecord::Base
   has_settings
@@ -22,7 +16,7 @@ def setup_db
       t.text   :value, :null => true
       t.integer :target_id, :null => true
       t.string :target_type, :limit => 30, :null => true
-      t.timestamps
+      t.timestamps :null => false
     end
     add_index :settings, [ :target_type, :target_id, :var ], :unique => true
     

@@ -1,11 +1,11 @@
 = my_rails_setting Gem
 This is the Gem version of rails-setting Plugin
 
-More information about the Plugin please see below, or at https://github.com/Squeegy/rails-settings
+More information about the Plugin please see below, or at https://github.com/SysMO-DB/my_rails_settings
 
 == Install
 Put this line into Gemfile:
-  gem 'my_rails_settings', :git => "git://github.com/quyen/my_rails_settings.git"
+  gem 'my_rails_settings', :git => "git://github.com/SysMO-DB/my_rails_settings.git"
 
 == Notice
 Even through the plugin document below states that you can set the default value for certain setting, it doesn't work.
@@ -23,7 +23,7 @@ arrays, or any object.
 == Setup
 
 Requirements:
-  Rails 2.3.x
+  Rails 4.x.x
 
 You must create the table used by the Settings model.  Simply run this command:
   ruby script/generate settings_migration
@@ -79,14 +79,14 @@ Decide you dont want to track a particular setting anymore?
 
 Want a list of all the settings?
 
-  Settings.all            # returns {'admin_password' => 'super_secret', 'date_format' => '%m %d, %Y'}
+  Settings.to_hash            # returns {'admin_password' => 'super_secret', 'date_format' => '%m %d, %Y'}
 
 You need name spaces and want a list of settings for a give name space? Just choose your prefered named space delimiter and use Settings.all like this:
 
   Settings['preferences.color'] = :blue
   Settings['preferences.size'] = :large
   Settings['license.key'] = 'ABC-DEF'
-  Settings.all('preferences.')   # returns { 'preferences.color' => :blue, 'preferences.size' => :large }
+  Settings.to_hash('preferences.')   # returns { 'preferences.color' => :blue, 'preferences.size' => :large }
 
 Set defaults for certain settings of your app.  This will cause the defined settings to return with the
 Specified value even if they are not in the database.  Make a new file in config/initializers/settings.rb
@@ -109,7 +109,7 @@ Then you can set/get a setting for a given user instance just by doing this:
   user = User.find(123)
   user.settings.color = :red
   user.settings.color # returns :red
-  user.settings.all # { "color" => :red }
+  user.settings.to_hash # { "color" => :red }
 
 I you want to find users having or not having some settings, there are named scopes for this:
 

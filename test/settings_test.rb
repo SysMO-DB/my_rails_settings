@@ -11,12 +11,13 @@ class SettingsTest < Test::Unit::TestCase
   def teardown
     Settings.delete_all
   end
-  def tests_defaults_false
+
+  test "defaults_false" do
     Settings.defaults[:foo] = false
     assert_equal false, Settings.foo
   end
 
-  def test_defaults
+  test "defaults" do
     Settings.defaults[:foo] = 'default foo'
     
     assert_nil Settings.target(:foo)
@@ -27,33 +28,33 @@ class SettingsTest < Test::Unit::TestCase
     assert_not_nil Settings.target(:foo)
   end
   
-  def test_get
+  test "get" do
     assert_setting 'foo', :test
     assert_setting 'bar', :test2
   end
 
-  def test_update
+  test "update" do
     assert_assign_setting '321', :test
   end
   
-  def test_create
+  test "create" do
     assert_assign_setting '123', :onetwothree
   end
   
-  def test_complex_serialization
+  test "complex_serialization" do
     complex = [1, '2', {:three => true}]
     Settings.complex = complex
     assert_equal complex, Settings.complex
   end
   
-  def test_serialization_of_float
+  test "serialization_of_float" do
     Settings.float = 0.01
     Settings.reload
     assert_equal 0.01, Settings.float
     assert_equal 0.02, Settings.float * 2
   end
   
-  def test_target_scope
+  test "target_scope" do
     user1 = User.create :name => 'First user'
     user2 = User.create :name => 'Second user'
     
@@ -69,13 +70,13 @@ class SettingsTest < Test::Unit::TestCase
     assert_setting nil, :two, user1
     assert_setting nil, :one, user2
     
-    assert_equal({ "one" => 1}, user1.settings.all('one'))
-    assert_equal({ "two" => 2}, user2.settings.all('two'))
-    assert_equal({ "one" => 1}, user1.settings.all('o'))
-    assert_equal({}, user1.settings.all('non_existing_var'))
+    assert_equal({ "one" => 1}, user1.settings.to_hash('one'))
+    assert_equal({ "two" => 2}, user2.settings.to_hash('two'))
+    assert_equal({ "one" => 1}, user1.settings.to_hash('o'))
+    assert_equal({}, user1.settings.to_hash('non_existing_var'))
   end
   
-  def test_named_scope
+  test "named_scope" do
     user_without_settings = User.create :name => 'User without settings'
     user_with_settings = User.create :name => 'User with settings'
     user_with_settings.settings.one = '1'
@@ -92,14 +93,14 @@ class SettingsTest < Test::Unit::TestCase
     assert_equal [user_without_settings, user_with_settings], User.without_settings_for('foo')
   end
   
-  def test_all
-    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all)
-    assert_equal({ "test2" => "bar" }, Settings.all('test2'))
-    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.all('test'))
-    assert_equal({}, Settings.all('non_existing_var'))
+  test "to_hash" do
+    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.to_hash)
+    assert_equal({ "test2" => "bar" }, Settings.to_hash('test2'))
+    assert_equal({ "test2" => "bar", "test" => "foo" }, Settings.to_hash('test'))
+    assert_equal({}, Settings.to_hash('non_existing_var'))
   end
   
-  def test_merge
+  test "merge" do
     assert_raise(TypeError) do
       Settings.merge! :test, { :a => 1 }
     end
@@ -116,7 +117,7 @@ class SettingsTest < Test::Unit::TestCase
     assert_equal({ :two => 2 }, Settings[:empty_hash])
   end
   
-  def test_destroy
+  test "destroy" do
     Settings.destroy :test
     assert_equal nil, Settings.test
   end
